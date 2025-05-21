@@ -1,61 +1,63 @@
 #Soal 2
-class Model(object): 
-  services = { 
-      'email': {'number': 1000, 'price': 2,}, 
-      'sms': {'number': 1000, 'price': 10,}, 
-      'voice': {'number': 1000, 'price': 15,}, 
-  } 
+from tkinter import Tk, Label, Button, Entry, IntVar, END, W, E
 
-#Pengembangan Kode Soal 1 menjadi Kode Soal 2 
-class View(object): 
-  def list_services(self, services): 
-    print("Services Provided:") 
-    for svc in services: 
-      print(svc,'') 
- 
-  def list_pricing(self, services):
-    print("Pricing for Services:")  
-    for svc in services: 
-      print("For", Model.services[svc]['number'], 
-            svc, "message you pay $", 
-            Model.services[svc]['price'])
-         
-  def list_services2(self, services): 
-    print("Layanan yang disediakan:") 
-    for svc in services: 
-      print(svc,'') 
- 
-  def list_pricing2(self, services):
-    print("Tarif tiap layanan:")  
-    for svc in services: 
-      print("Untuk", Model.services[svc]['number'], 
-            svc, "anda membayar $", 
-            Model.services[svc]['price'])  
-       
-class Controller(object): 
-  def __init__(self): 
-    self.model = Model() 
-    self.view = View() 
- 
-  def get_services(self): 
-    services = self.model.services.keys() 
-    if Bahasa == "1":
-      return(self.view.list_services(services))
-    elif Bahasa == "2":
-      return(self.view.list_services2(services)) 
-    else:
-      print("Error, choose the language number!")
- 
-  def get_pricing(self): 
-    services = self.model.services.keys() 
-    if Bahasa == "1":
-      return(self.view.list_pricing(services))
-    elif Bahasa == "2":
-      return(self.view.list_pricing2(services))
-    print("Error, choose the language number!")
- 
-#Instansiasi objek 
-controller = Controller()
-Bahasa = input("What language do you choose? [1]English [2]Indonesia: ") 
-controller.get_services() 
-controller.get_pricing() 
+class Calculator:
+    def __init__(self, master):
+        self.master = master
+        master.title("Calculator")
+        self.total = 0
+        self.entered_number = 0
+        self.total_label_text = IntVar()
+        self.total_label_text.set(self.total)
+        self.total_label = Label(master, textvariable=self.total_label_text)
+        self.label = Label(master, text="Total:")
+        vcmd = master.register(self.validate)  # we have to wrap the command
+        self.entry = Entry(master, validate="key", validatecommand=(vcmd, '%P'))
+        self.add_button = Button(master, text="+",
+                                 command=lambda: self.update("add"))
+        self.subtract_button = Button(master, text="-",
+                                      command=lambda: self.update("subtract"))
+        self.multiply_button = Button(master, text="X",
+                                      command=lambda: self.update("multiply"))
+        self.divide_button = Button(master, text="/",
+                                    command=lambda: self.update("divide"))
+        self.reset_button = Button(master, text="Reset",
+                                   command=lambda: self.update("reset"))
+        # LAYOUT
+        self.label.grid(row=0, column=0, sticky=W)
+        self.total_label.grid(row=0, column=1, columnspan=2, sticky=E)
+        self.entry.grid(row=1, column=0, columnspan=3, sticky=W + E)
+        self.add_button.grid(row=2, column=0)
+        self.subtract_button.grid(row=2, column=1)
+        self.multiply_button.grid(row=3, column=0)
+        self.divide_button.grid(row=3, column=1)
+        self.reset_button.grid(row=2, column=2, sticky=W + E)
+
+    def validate(self, new_text):
+        if not new_text:  # the field is being cleared
+            self.entered_number = 0
+            return True
+        try:
+            self.entered_number = int(new_text)
+            return True
+        except ValueError:
+            return False
+
+    def update(self, method):
+        if method == "add":
+            self.total += self.entered_number
+        elif method == "subtract":
+            self.total -= self.entered_number
+        elif method == "multiply":
+            self.total *= self.entered_number
+        elif method == "divide":
+            self.total /= self.entered_number
+        else:  # reset
+            self.total = 0
+        self.total_label_text.set(self.total)
+        self.entry.delete(0, END)
+
+
+root = Tk()
+my_gui = Calculator(root)
+root.mainloop()
